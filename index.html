@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Dinámica — Actividad JS</title>
+
+    <!--
+    ============================================================
+    ACTIVIDAD — DESARROLLO DE APLICACIONES WEB DINÁMICAS
+    6° Año — Tecnicatura en Programación — DC 284/12
+    ============================================================
+    -->
+
+    <style>
+
+        /* ── VARIABLES CSS ── */
+        /* Tema claro — valores por defecto */
+        :root {
+            --fondo:        #d5b8fa;
+            --texto:        #222222;
+            --tarjeta:      #ffffff;
+            --borde:        #e0e0e0;
+            --acento:       #3c195e;
+            --acento-hover: #7d1abf;
+            --sombra:       rgba(0,0,0,0.10);
+            --header-bg:    #9a57e7;
+        }
+
+        /* Tema oscuro — se activa con classList.toggle("oscuro") */
+        body.oscuro {
+            --fondo:        #13131f;
+            --texto:        #e8e8f0;
+            --tarjeta:      #1e1e30;
+            --borde:        #333355;
+            --acento:       #ab5bf6;
+            --acento-hover: #7040e0;
+            --sombra:       rgba(0,0,0,0.45);
+            --header-bg:    #0d0d1a;
+        } /* <--- Corregido: se quitó la 's' suelta que rompía el CSS */
+
+        /* ── RESET ── */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--fondo);
+            color: var(--texto);
+            transition: background-color 0.35s, color 0.35s;
+            min-height: 100vh;
+        }
+
+        /* ── HEADER ── */
+        .main-header {
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background-color: var(--header-bg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            height: 50px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .logo-container h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        #btn-tema {
+            background: white;
+            color: var(--header-bg);
+            border: none;
+            padding: 0.45rem 1.1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+        #btn-tema:hover { transform: scale(1.06); }
+
+        /* ── HERO BANNER ── */
+        .hero-banner {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), #5a2e8c;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            text-align: center;
+            padding: 0 1rem;
+        }
+        .banner-text h2 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        .banner-text p {
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        /* ── MAIN ── */
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem 4rem;
+        }
+
+        /* ── TÍTULO SECCIÓN ── */
+        .titulo-seccion {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-left: 0.9rem;
+            border-left: 5px solid var(--acento);
+            color: var(--texto);
+        }
+
+        /* ══════════════════════════════════════════
+           CARRUSEL
+        ══════════════════════════════════════════ */
+        .carrusel-contenedor {
+            position: relative;
+        }
+
+        .carrusel-wrapper {
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        .carrusel-track {
+            display: flex;
+            gap: 1.2rem;
+            transition: transform 0.4s ease;
+            padding: 0.5rem 0.2rem 1rem;
+        }
+
+        .producto-card {
+            flex: 0 0 calc(25% - 0.9rem);
+            min-width: 0;
+            background-color: var(--tarjeta);
+            border: 1px solid var(--borde);
+            border-radius: 12px;
+            box-shadow: 0 3px 10px var(--sombra);
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.35s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .producto-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px var(--sombra);
+        }
+
+        .producto-card img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            display: block;
+        }
+
+        .producto-info {
+            padding: 0.9rem 1rem 1rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            gap: 0.35rem;
+        }
+
+        .producto-nombre {
+            font-weight: 700;
+            font-size: 0.95rem;
+            line-height: 1.3;
+        }
+
+        .producto-descripcion {
+            font-size: 0.82rem;
+            color: #888;
+            flex: 1;
+        }
+
+        .producto-precio {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--acento);
+        }
+
+        .btn-agregar {
+            margin-top: 0.5rem;
+            background-color: var(--acento);
+            color: white;
+            border: none;
+            padding: 0.55rem 0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.2s, transform 0.15s;
+        }
+        .btn-agregar:hover {
+            background-color: var(--acento-hover);
+            transform: scale(1.02);
+        }
+
+        /* ── FLECHAS DEL CARRUSEL ── */
+        .flecha {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--acento);
+            color: white;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+            transition: background-color 0.2s, transform 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .flecha:hover { background-color: var(--acento-hover); transform: translateY(-50%) scale(1.1); }
+        .flecha:disabled { background: #ccc; cursor: default; transform: translateY(-50%); }
+
+        #btn-anterior { left: -20px; }
+        #btn-siguiente { right: -20px; }
+
+        /* ── INDICADORES ── */
+        .indicadores {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .punto {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--borde);
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .punto.activo {
+            background: var(--acento);
+            transform: scale(1.3);
+        }
+
+        /* ── CARRITO FLOTANTE ── */
+        #carrito-flotante {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: var(--acento);
+            color: white;
+            padding: 0.8rem 1.3rem;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 700;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+            cursor: pointer;
+            border: none;
+            transition: transform 0.2s;
+            z-index: 200;
+        }
+        #carrito-flotante:hover { transform: scale(1.05); }
+
+        @keyframes rebote {
+            0%   { transform: scale(1); }
+            40%  { transform: scale(1.25); }
+            70%  { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+        .rebote { animation: rebote 0.4s ease; }
+
+        /* ── FOOTER ── */
+        footer {
+            background-color: var(--header-bg);
+            color: rgba(255,255,255,0.75);
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER & HERO BANNER
+============================================================ -->
+<header class="main-header">
+    <div class="header-content">
+        <div class="logo-container">
+            <!-- Reemplaza "nnnnnn" por la ruta real de tu imagen de logo si la tienes -->
+            <img src="./img/logo.png" alt="logo tienda dinamica" class="logo">
+            <h1>Tienda Dinámica</h1>
+        </div>
+        
+        <!-- Botón de Tema Oscuro/Claro -->
+        <button id="btn-tema" onclick="cambiarTema()">🌙 Modo Oscuro</button>
+    </div>
+
+    <div class="hero-banner">
+        <div class="banner-text">
+            <h2>Bienvenidos a nuestra tienda</h2>
+            <p>Encuentra los mejores productos al mejor precio</p>
+        </div>
+    </div>
+</header>
+
+
+<main>
+    <h2 class="titulo-seccion">Nuestros Productos</h2>
+
+    <div class="carrusel-contenedor">
+        <!-- Flecha izquierda -->
+        <button class="flecha" id="btn-anterior" onclick="moverCarrusel(-1)">◀️</button>
+
+        <div class="carrusel-wrapper">
+            <!-- JS llena este div con las tarjetas de productos -->
+            <div class="carrusel-track" id="carrusel-track"></div>
+        </div>
+
+        <!-- Flecha derecha -->
+        <button class="flecha" id="btn-siguiente" onclick="moverCarrusel(1)">▶️</button>
+    </div>
+
+    <!-- Puntitos indicadores -->
+    <div class="indicadores" id="indicadores"></div>
+</main>
+
+
+<footer>
+    <p>Web Dinámicas — 6°2 — Tecnicatura en Programación</p>
+</footer>
+
+<!-- Botón flotante del carrito -->
+<button id="carrito-flotante" onclick="verCarrito()" style="display:none;">
+    🛒 <span id="contador-carrito">0</span> productos
+</button>
+
+<!-- VINCULAMOS EL JS -->
+<script src="dinamica.js"></script>
+
+</body>
+</html>
